@@ -13,37 +13,22 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/shared/Components/ui/sidebar';
+import { Toaster } from '@/shared/Components/ui/toaster';
 import { Link, usePage } from '@inertiajs/react';
-import { CalendarDays, CircleUser } from 'lucide-react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { CircleUser } from 'lucide-react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { AppSidebar } from './AppSidebar';
-
-type MenuItemProp = {
-  title: string;
-  href: string;
-  variant: 'default' | 'ghost';
-  icon: ReactNode;
-};
-
-const links: MenuItemProp[] = [
-  {
-    title: 'Dashboard',
-    href: route('dashboard'),
-    variant: 'default',
-    icon: <CalendarDays className="size-4" />,
-  },
-];
 
 export default function Authenticated({
   children,
   header,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const { auth } = usePage().props;
   const user = auth.user;
 
   return (
     <SidebarProvider>
+      <Toaster />
       <AppSidebar />
       <div className="h-full w-full">
         <header className="flex h-14 items-center gap-4 lg:h-[60px] lg:px-6">

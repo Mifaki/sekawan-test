@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,9 +15,12 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::prefix('/dashboard')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+    Route::resource('user-management', UserController::class);
+})->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,4 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::prefix('api')->group(function () {
+    Route::patch('/users/{id}', [UserController::class, 'update'])
+        ->middleware(['auth', 'permission:edit_users']);
+});
+
+require __DIR__ . '/auth.php';

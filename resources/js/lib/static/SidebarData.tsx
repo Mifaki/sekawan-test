@@ -1,5 +1,5 @@
 import { INavGroup } from '@/shared/models/layoutinterfaces';
-import { LayoutDashboardIcon } from 'lucide-react';
+import { LayoutDashboardIcon, User2 } from 'lucide-react';
 
 export const sidebarData: INavGroup[] = [
   {
@@ -11,25 +11,9 @@ export const sidebarData: INavGroup[] = [
         icon: LayoutDashboardIcon,
       },
       {
-        title: 'Tasks',
-        url: '/tasks',
-        icon: LayoutDashboardIcon,
-      },
-      {
-        title: 'Apps',
-        url: '/apps',
-        icon: LayoutDashboardIcon,
-      },
-      {
-        title: 'Chats',
-        url: '/chats',
-        badge: '3',
-        icon: LayoutDashboardIcon,
-      },
-      {
-        title: 'Users',
-        url: '/users',
-        icon: LayoutDashboardIcon,
+        title: 'User',
+        url: '/dashboard/user-management',
+        icon: User2,
       },
     ],
   },
