@@ -1,5 +1,5 @@
 import { INavGroup } from '@/shared/models/layoutinterfaces';
-import { LayoutDashboardIcon, User2 } from 'lucide-react';
+import { CarFront, LayoutDashboardIcon, User2 } from 'lucide-react';
 
 export const sidebarData: INavGroup[] = [
   {
@@ -14,6 +14,11 @@ export const sidebarData: INavGroup[] = [
         title: 'User',
         url: '/dashboard/user-management',
         icon: User2,
+      },
+      {
+        title: 'Vehicle',
+        url: '/dashboard/vehicle-management',
+        icon: CarFront,
       },
     ],
   },

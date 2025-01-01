@@ -4,3 +4,15 @@ import { twMerge } from 'tailwind-merge';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const LogInfo = (msg: string) => console.debug(`[Info]: ${msg}`);
+export const LogError = (msg: string) => console.error(`[Error]: ${msg}`);
+
+export const formatToIDR = (value: string) => {
+  const number = value.replace(/\./g, '');
+  return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+export const unformatFromIDR = (value: string) => {
+  return value.replace(/\./g, '');
+};

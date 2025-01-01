@@ -11,6 +11,11 @@ export interface SheetState<T extends BaseEntity = BaseEntity> {
   data: T | null;
 }
 
+export type SheetConfig<TData = BaseEntity> = {
+  data: TData;
+  props?: any;
+};
+
 export interface IGeneralApiResponse {
   message: string;
   status: number;

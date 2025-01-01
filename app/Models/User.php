@@ -46,4 +46,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function fuelHistories()
+    {
+        return $this->hasMany(VehicleFuelHistory::class);
+    }
 }

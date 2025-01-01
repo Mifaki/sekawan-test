@@ -54,7 +54,7 @@ export const useGenerateColumns = ({
               {handleEdit && (
                 <DropdownMenuItem
                   onClick={() => handleEdit(user)}
-                  disabled={!editPermissions}
+                  disabled={editPermissions}
                 >
                   Edit
                 </DropdownMenuItem>

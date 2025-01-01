@@ -5,35 +5,62 @@ import {
 } from '@/shared/models/generalinterfaces';
 import { useReducer } from 'react';
 
-type SheetAction<T extends BaseEntity> =
-  | { type: 'OPEN_SHEET'; payload: { type: SheetType; data?: T } }
-  | { type: 'CLOSE_SHEET' };
+interface MultiSheetState<T extends BaseEntity> {
+  sheets: {
+    [sheetId: string]: SheetState<T>;
+  };
+}
 
-function createInitialState<T extends BaseEntity>(): SheetState<T> {
+type SheetAction<T extends BaseEntity> =
+  | {
+      type: 'OPEN_SHEET';
+      payload: {
+        sheetId: string;
+        type: SheetType;
+        data?: T;
+      };
+    }
+  | {
+      type: 'CLOSE_SHEET';
+      payload: {
+        sheetId: string;
+      };
+    };
+
+function createInitialState<T extends BaseEntity>(): MultiSheetState<T> {
   return {
-    isOpen: false,
-    type: 'view',
-    data: null,
+    sheets: {},
   };
 }
 
 function sheetReducer<T extends BaseEntity>(
-  state: SheetState<T>,
+  state: MultiSheetState<T>,
   action: SheetAction<T>
-): SheetState<T> {
+): MultiSheetState<T> {
   switch (action.type) {
     case 'OPEN_SHEET':
       return {
         ...state,
-        isOpen: true,
-        type: action.payload.type,
-        data: action.payload.data || null,
+        sheets: {
+          ...state.sheets,
+          [action.payload.sheetId]: {
+            isOpen: true,
+            type: action.payload.type,
+            data: action.payload.data || null,
+          },
+        },
       };
     case 'CLOSE_SHEET':
       return {
         ...state,
-        isOpen: false,
-        data: null,
+        sheets: {
+          ...state.sheets,
+          [action.payload.sheetId]: {
+            ...state.sheets[action.payload.sheetId],
+            isOpen: false,
+            data: null,
+          },
+        },
       };
     default:
       return state;
@@ -46,18 +73,32 @@ export function useSheetReducer<T extends BaseEntity>() {
     createInitialState<T>()
   );
 
-  const openSheet = (type: SheetType, data?: T) => {
-    dispatch({ type: 'OPEN_SHEET', payload: { type, data } });
+  const openSheet = (sheetId: string, type: SheetType, data?: T) => {
+    dispatch({
+      type: 'OPEN_SHEET',
+      payload: { sheetId, type, data },
+    });
   };
 
-  const closeSheet = () => {
-    dispatch({ type: 'CLOSE_SHEET' });
+  const closeSheet = (sheetId: string) => {
+    dispatch({
+      type: 'CLOSE_SHEET',
+      payload: { sheetId },
+    });
+  };
+
+  const getSheetState = (sheetId: string): SheetState<T> => {
+    return (
+      state.sheets[sheetId] || {
+        isOpen: false,
+        type: 'view',
+        data: null,
+      }
+    );
   };
 
   return {
-    isOpen: state.isOpen,
-    sheetType: state.type,
-    sheetData: state.data,
+    getSheetState,
     openSheet,
     closeSheet,
   };

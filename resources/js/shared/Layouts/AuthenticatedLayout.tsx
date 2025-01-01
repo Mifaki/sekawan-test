@@ -1,3 +1,4 @@
+import { useCheckUserAuth } from '@/hooks/auth';
 import { Button } from '@/shared/Components/ui/button';
 import {
   DropdownMenu,
@@ -24,6 +25,9 @@ export default function Authenticated({
   header,
 }: PropsWithChildren<{ header?: ReactNode }>) {
   const { auth } = usePage().props;
+  const handleCheckUserAuth = useCheckUserAuth();
+
+  handleCheckUserAuth();
   const user = auth.user;
 
   return (

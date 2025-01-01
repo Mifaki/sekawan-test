@@ -32,6 +32,8 @@ export type DataTableProps<TData extends object, TValue> = {
   data: TData[];
   searchPlaceholder?: string;
   searchableColumns?: Array<keyof TData>;
+  isLoading?: boolean;
+  maxHeight?: 'max-h-96' | 'max-h-[600px]' | 'max-h-screen' | 'max-h-full';
 };
 
 function createGlobalFilterFn<TData extends object>(
@@ -56,6 +58,8 @@ export function DataTable<TData extends object, TValue>({
   searchPlaceholder = 'Search...',
   searchableColumns,
   data,
+  isLoading = false,
+  maxHeight = 'max-h-[600px]',
 }: DataTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -116,7 +120,7 @@ export function DataTable<TData extends object, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className={`overflow-auto rounded-md border ${maxHeight}`}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -136,34 +140,40 @@ export function DataTable<TData extends object, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {isLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900" />
+            </div>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns?.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          )}
         </Table>
       </div>
       <DataTablePagination table={table} />

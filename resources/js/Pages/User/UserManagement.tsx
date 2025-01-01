@@ -32,11 +32,12 @@ export default function UseraManagement({ users }: IUserManagement) {
 
   const { toast } = useToast();
 
-  const { isOpen, sheetType, sheetData, openSheet, closeSheet } =
-    useSheetReducer<IRootuser>();
+  const { getSheetState, openSheet, closeSheet } = useSheetReducer<IRootuser>();
+
+  const userSheetState = getSheetState('user-sheet');
 
   const handleEdit = (user: IRootuser) => {
-    openSheet('edit', user);
+    openSheet('user-sheet', 'edit', user);
   };
 
   const handleSubmit = async (updatedUser: IRootuser) => {
@@ -48,12 +49,9 @@ export default function UseraManagement({ users }: IUserManagement) {
           description: 'User updated successfully!',
         });
 
-        setTimeout(() => {
-          router.reload();
-        }, 1000);
+        router.reload();
+        closeSheet('user-sheet');
       }
-
-      console.log(res);
     } catch (error) {
       console.error('Error updating user:', error);
 
@@ -71,9 +69,9 @@ export default function UseraManagement({ users }: IUserManagement) {
   const sheetContent: Partial<Record<SheetType, JSX.Element>> = {
     edit: (
       <EditForm
-        data={sheetData}
+        data={userSheetState.data}
         onSubmit={handleSubmit}
-        onCancel={closeSheet}
+        onCancel={() => closeSheet('user-sheet')}
         isLoading={false}
       />
     ),
@@ -82,7 +80,7 @@ export default function UseraManagement({ users }: IUserManagement) {
   return (
     <AuthenticatedLayout>
       <Head title="User Management" />
-      <div className="h-[400vh]">
+      <div className="mb-10">
         <ManagementHeader
           title="User Management"
           desc="Manage your users and their roles here."
@@ -96,9 +94,10 @@ export default function UseraManagement({ users }: IUserManagement) {
       </div>
 
       <GenericSheet
-        isOpen={isOpen}
-        onClose={closeSheet}
-        type={sheetType}
+        sheetId="user-sheet"
+        isOpen={userSheetState.isOpen}
+        onClose={() => closeSheet('user-sheet')}
+        type={userSheetState.type}
         config={userSheetConfig}
         sheetContent={sheetContent}
       />

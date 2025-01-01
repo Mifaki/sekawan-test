@@ -21,6 +21,7 @@ interface SheetConfig {
 }
 
 interface GenericSheetProps {
+  sheetId: string;
   isOpen: boolean;
   onClose: () => void;
   type: SheetType;
@@ -29,20 +30,40 @@ interface GenericSheetProps {
 }
 
 export function GenericSheet({
+  sheetId,
   isOpen,
   onClose,
   type,
   config,
   sheetContent,
 }: GenericSheetProps) {
+  const getSheetProps = () => {
+    switch (type) {
+      case 'view':
+        return {
+          side: 'bottom' as const,
+          className: 'h-[85dvh] w-full',
+        };
+      default:
+        return {
+          side: 'right' as const,
+          className: 'sm:max-w-xl',
+        };
+    }
+  };
+
+  const { side, className } = getSheetProps();
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md">
+      <SheetContent side={side} className={className}>
         <SheetHeader>
           <SheetTitle>{config.title[type]}</SheetTitle>
           <SheetDescription>{config.description[type]}</SheetDescription>
         </SheetHeader>
-        <div className="mt-6">{sheetContent[type]}</div>
+        <div id={sheetId} className="mt-6">
+          {sheetContent[type]}
+        </div>
       </SheetContent>
     </Sheet>
   );

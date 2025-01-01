@@ -1,3 +1,4 @@
+import { LogError } from '@/lib/utils';
 import Checkbox from '@/shared/Components/Checkbox';
 import InputError from '@/shared/Components/InputError';
 import InputLabel from '@/shared/Components/InputLabel';
@@ -24,7 +25,10 @@ export default function Login({
     e.preventDefault();
 
     post(route('login'), {
-      onFinish: () => reset('password'),
+      onFinish: () => {
+        reset('password');
+      },
+      onError: () => LogError('Error logging in'),
     });
   };
 

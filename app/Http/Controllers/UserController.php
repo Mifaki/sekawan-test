@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserUpdateRequest;
 use Inertia\Inertia;
 
@@ -27,23 +27,35 @@ class UserController extends Controller
 
     public function update(UserUpdateRequest $request, $id)
     {
-        $user = User::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        $user->update($request->only(['name', 'email']));
+            $user = User::findOrFail($id);
+            $user->update($request->only(['name', 'email']));
 
-        if ($request->filled('role')) {
-            $user->syncRoles([$request->input('role')]);
+            if ($request->filled('role')) {
+                $user->syncRoles([$request->input('role')]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'User updated successfully.',
+                'user' => [
+                    'id' => (string) $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->getRoleNames()->first() ?? 'Not Assigned',
+                ],
+                'status' => 200
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to update user. Please try again.',
+                'status' => 500
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'User updated successfully.',
-            'user' => [
-                'id' => (string) $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->getRoleNames()->first() ?? 'Not Assigned',
-            ],
-            'status' => 200
-        ]);
     }
 }
