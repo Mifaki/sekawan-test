@@ -122,7 +122,7 @@ export function DataTable<TData extends object, TValue>({
       </div>
       <div className={`overflow-auto rounded-md border ${maxHeight}`}>
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 bg-white">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {

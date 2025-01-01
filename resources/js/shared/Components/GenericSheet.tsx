@@ -12,11 +12,13 @@ interface SheetConfig {
     edit?: string;
     create?: string;
     view?: string;
+    authorize?: string;
   };
   description: {
     edit?: string;
     create?: string;
     view?: string;
+    authorize?: string;
   };
 }
 

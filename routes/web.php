@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleBookingController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleFuelHistoryController;
 use App\Http\Controllers\VehicleMaintenanceController;
@@ -27,6 +28,7 @@ Route::prefix('dashboard')
 
         Route::resource('user-management', UserController::class);
         Route::resource('vehicle-management', VehicleController::class);
+        Route::resource('booking-management', VehicleBookingController::class);
     });
 
 Route::middleware('auth')->group(function () {
@@ -61,6 +63,12 @@ Route::prefix('api')->middleware('auth')->group(function () {
         Route::get('{id}', 'show')->middleware('permission:view_vehicle_fuel_histories');
         Route::post('/', 'store')->middleware('permission:create_vehicle_fuel_histories');
         Route::delete('{id}', 'destroy')->middleware('permission:delete_vehicle_fuel_histories');
+    });
+
+    // Vehicle Booking Routes
+    Route::controller(VehicleBookingController::class)->prefix('vehicles/bookings')->group(function () {
+        Route::post('/', 'store')->middleware('permission:create_bookings');
+        Route::patch('{id}', 'update')->middleware('permission:edit_bookings');
     });
 });
 

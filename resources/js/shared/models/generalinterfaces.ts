@@ -1,4 +1,4 @@
-export type SheetType = 'edit' | 'view' | 'create';
+export type SheetType = 'edit' | 'view' | 'create' | 'authorize';
 
 export interface BaseEntity {
   id: string | number;

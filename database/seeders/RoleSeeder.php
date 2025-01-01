@@ -25,6 +25,9 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'view_vehicle_fuel_histories']);
         Permission::create(['name' => 'create_vehicle_fuel_histories']);
         Permission::create(['name' => 'delete_vehicle_fuel_histories']);
+        Permission::create(['name' => 'create_bookings']);
+        Permission::create(['name' => 'edit_bookings']);
+        Permission::create(['name' => 'delete_bookings']);
 
 
         $adminRole = Role::create(['name' => RolesEnum::ADMIN->value]);
@@ -39,7 +42,8 @@ class RoleSeeder extends Seeder
             'delete_vehicle_maintenances',
             'view_vehicle_fuel_histories',
             'create_vehicle_fuel_histories',
-            'delete_vehicle_fuel_histories'
+            'delete_vehicle_fuel_histories',
+            'edit_bookings'
         ]);
     }
 }

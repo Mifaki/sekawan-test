@@ -21,11 +21,18 @@ class UserSeeder extends Seeder
         ]);
         $admin->assignRole(RolesEnum::ADMIN->value);
 
-        $manager = User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@manager.com',
+        $manager1 = User::create([
+            'name' => 'Manager User 1',
+            'email' => 'manager_1@manager.com',
             'password' => Hash::make('admin123'),
         ]);
-        $manager->assignRole(RolesEnum::MANAGER->value);
+        $manager1->assignRole(RolesEnum::MANAGER->value);
+
+        $manager2 = User::create([
+            'name' => 'Manager User 2',
+            'email' => 'manager_2@manager.com',
+            'password' => Hash::make('admin123'),
+        ]);
+        $manager2->assignRole(RolesEnum::MANAGER->value);
     }
 }

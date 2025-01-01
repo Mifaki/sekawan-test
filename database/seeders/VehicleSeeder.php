@@ -7,6 +7,7 @@ use App\Models\Vehicle;
 use App\Models\VehicleBooking;
 use App\Models\VehicleFuelHistory;
 use App\Models\VehicleMaintenance;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use App\Enums\VehicleTypeEnum;
 use App\Enums\VehicleOwnershipEnum;
@@ -15,12 +16,11 @@ use App\Enums\VehicleMaintenanceStatusEnum;
 
 class VehicleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $faker = \Faker\Factory::create();
+
+        $users = User::all();
 
         for ($i = 0; $i < 10; $i++) {
             $vehicle = Vehicle::create([
@@ -37,17 +37,49 @@ class VehicleSeeder extends Seeder
             ]);
 
             for ($j = 0; $j < rand(1, 5); $j++) {
-                VehicleBooking::create([
+                $status = $faker->randomElement(VehicleBookingStatusEnum::cases())->value;
+                $requestedDate = $faker->dateTimeBetween('-1 month', 'now');
+
+                $reviewers = $users->random(2);
+
+                $bookingData = [
                     'vehicle_id' => $vehicle->id,
-                    'requested_by' => User::inRandomOrder()->first()->id,
-                    'driver_id' => User::inRandomOrder()->first()->id,
+                    'requested_by' => $users->random()->id,
+                    'driver_id' => $users->random()->id,
                     'start_datetime' => $faker->dateTimeBetween('-1 month', 'now'),
                     'end_datetime' => $faker->dateTimeBetween('now', '+1 week'),
                     'purpose' => $faker->sentence,
                     'destination' => $faker->address,
                     'passenger_count' => $faker->numberBetween(1, 5),
-                    'status' => $faker->randomElement(VehicleBookingStatusEnum::cases())->value,
-                ]);
+                    'status' => $status,
+                    'first_reviewer' => $reviewers[0]->id,
+                    'second_reviewer' => $reviewers[1]->id,
+                    'first_approval_at' => null,
+                    'second_approval_at' => null,
+                    'rejected_by' => null,
+                    'rejected_at' => null,
+                    'rejection_reason' => null,
+                ];
+
+                switch($status) {
+                    case VehicleBookingStatusEnum::APPROVEDL1->value:
+                        $bookingData['first_approval_at'] = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        break;
+
+                    case VehicleBookingStatusEnum::COMPLETED->value:
+                        $firstApprovalDate = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        $bookingData['first_approval_at'] = $firstApprovalDate;
+                        $bookingData['second_approval_at'] = $firstApprovalDate->copy()->addHours(rand(1, 24));
+                        break;
+
+                    case VehicleBookingStatusEnum::REJECTED->value:
+                        $bookingData['rejected_by'] = $users->random()->id;
+                        $bookingData['rejected_at'] = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        $bookingData['rejection_reason'] = $faker->sentence;
+                        break;
+                }
+
+                VehicleBooking::create($bookingData);
             }
 
             for ($k = 0; $k < rand(1, 5); $k++) {
@@ -63,7 +95,7 @@ class VehicleSeeder extends Seeder
             for ($l = 0; $l < 3; $l++) {
                 VehicleFuelHistory::create([
                     'vehicle_id' => $vehicle->id,
-                    'driver_id' => User::inRandomOrder()->first()->id,
+                    'driver_id' => $users->random()->id,
                     'amount_liters' => $faker->randomFloat(2, 10, 100),
                     'cost' => $faker->randomFloat(2, 50000, 200000),
                     'refuel_date' => $faker->dateTimeBetween('-2 months', 'now'),

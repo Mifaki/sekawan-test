@@ -116,6 +116,10 @@ class VehicleController extends Controller
 
             DB::beginTransaction();
 
+            $vehicle->fuelHistories()->delete();
+            $vehicle->bookings()->delete();
+            $vehicle->maintenances()->delete();
+
             $vehicle->delete();
 
             DB::commit();
