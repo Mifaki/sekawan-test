@@ -1,4 +1,4 @@
-# Sekawa Test
+# Sekawan Test
 
 This is a web application for monitoring and booking vehicles for a mining company. The application enables:
 
