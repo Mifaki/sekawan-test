@@ -6,10 +6,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { BookingStatusBadge } from './Badge';
 
 interface useGenerateColumnsProps {
+  userId: string;
   handleAuthorize: (booking: IRootBooking) => void;
 }
 
 export const useGenerateColumns = ({
+  userId,
   handleAuthorize,
 }: useGenerateColumnsProps) => {
   const columns: ColumnDef<IRootBooking>[] = [
@@ -85,7 +87,9 @@ export const useGenerateColumns = ({
             onClick={() => handleAuthorize(row.original)}
             disabled={
               row.original.status === 'completed' ||
-              row.original.status === 'rejected'
+              row.original.status === 'rejected' ||
+              (row.original.first_reviewer != userId &&
+                row.original.second_reviewer != userId)
             }
           >
             Authorize

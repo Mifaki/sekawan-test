@@ -1,13 +1,16 @@
 import { useToast } from '@/hooks/use-toast';
+import { usePermissions } from '@/hooks/usePermission';
 import { useSheetReducer } from '@/hooks/useSheetReducer';
 import { DataTable } from '@/shared/Components/DataTable';
 import { GenericSheet } from '@/shared/Components/GenericSheet';
 import ManagementHeader from '@/shared/Components/ManagementHeader';
+import { Button } from '@/shared/Components/ui/button';
 import AuthenticatedLayout from '@/shared/Layouts/AuthenticatedLayout';
 import { SheetType } from '@/shared/models/generalinterfaces';
 import { IRootuser } from '@/shared/models/userinterfaces';
 import { UserAPI } from '@/shared/repositories/userService';
 import { Head, router, usePage } from '@inertiajs/react';
+import { Download } from 'lucide-react';
 import { useGenerateColumns } from './components/column';
 import { EditForm } from './components/EditForm';
 
@@ -28,7 +31,7 @@ const userSheetConfig = {
 
 export default function UseraManagement({ users }: IUserManagement) {
   const { auth } = usePage().props;
-  const editPermissions = auth.user.role === 'admin';
+  const { canDownloadUsers } = usePermissions(auth.user?.permissions);
 
   const { toast } = useToast();
 
@@ -62,7 +65,6 @@ export default function UseraManagement({ users }: IUserManagement) {
   };
 
   const columns = useGenerateColumns({
-    editPermissions,
     handleEdit,
   });
 
@@ -77,6 +79,12 @@ export default function UseraManagement({ users }: IUserManagement) {
     ),
   };
 
+  const handleExport = () => {
+    if (!canDownloadUsers) return;
+
+    window.location.href = route('users.export');
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="User Management" />
@@ -84,6 +92,12 @@ export default function UseraManagement({ users }: IUserManagement) {
         <ManagementHeader
           title="User Management"
           desc="Manage your users and their roles here."
+          actionComponent={
+            <Button variant="outline" onClick={handleExport}>
+              Export
+              <Download className="ml-2 h-4 w-4" />
+            </Button>
+          }
         />
         <DataTable
           columns={columns}

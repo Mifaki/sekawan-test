@@ -1,4 +1,5 @@
 import { useToast } from '@/hooks/use-toast';
+import { usePermissions } from '@/hooks/usePermission';
 import { useSheetReducer } from '@/hooks/useSheetReducer';
 import { DataTable } from '@/shared/Components/DataTable';
 import { GenericSheet } from '@/shared/Components/GenericSheet';
@@ -15,8 +16,8 @@ import {
   IRootVehicleMaintenance,
 } from '@/shared/models/vehicleInterfaces';
 import { VehicleAPI } from '@/shared/repositories/vehicleService';
-import { Head, router } from '@inertiajs/react';
-import { PlusCircleIcon } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Download, PlusCircleIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useGenerateColumns } from './components/column';
 import { useGenerateFuelHistoryColumns } from './components/feature/fuelHistories/fuelHistoriesColumn';
@@ -36,6 +37,10 @@ export interface IVehicleManagement {
 }
 
 export default function VehicleManagement({ vehicles }: IVehicleManagement) {
+  const { auth } = usePage().props;
+  const { canDownloadVehicles, canCreateVehicles } = usePermissions(
+    auth.user?.permissions
+  );
   const { toast } = useToast();
 
   const [maintenances, setMaintenances] = useState<IRootVehicleMaintenance[]>(
@@ -356,6 +361,12 @@ export default function VehicleManagement({ vehicles }: IVehicleManagement) {
     ),
   };
 
+  const handleExport = () => {
+    if (!canDownloadVehicles) return;
+
+    window.location.href = route('vehicles.export');
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="Vehicle Management" />
@@ -364,9 +375,19 @@ export default function VehicleManagement({ vehicles }: IVehicleManagement) {
           title="Vehicle Management"
           desc="Manage your vehicles and other related component."
           actionComponent={
-            <Button onClick={() => openSheet('vehicle-sheet', 'create')}>
-              Add Vehicle <PlusCircleIcon />{' '}
-            </Button>
+            <div className="flex items-center gap-3">
+              {canCreateVehicles && (
+                <Button onClick={() => openSheet('vehicle-sheet', 'create')}>
+                  Add Vehicle <PlusCircleIcon />{' '}
+                </Button>
+              )}
+              {canDownloadVehicles && (
+                <Button variant="outline" onClick={handleExport}>
+                  Export
+                  <Download className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
           }
         />
         <DataTable

@@ -1,7 +1,10 @@
+import { Permission } from './permissioninterfaces';
+
 export interface IBaseNavItem {
   title: string;
   badge?: string;
   icon?: React.ElementType;
+  requiredPermission?: Permission;
 }
 
 export type TNavLink = IBaseNavItem & {

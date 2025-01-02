@@ -1,4 +1,5 @@
 import { useToast } from '@/hooks/use-toast';
+import { usePermissions } from '@/hooks/usePermission';
 import { useSheetReducer } from '@/hooks/useSheetReducer';
 import { DataTable } from '@/shared/Components/DataTable';
 import { GenericSheet } from '@/shared/Components/GenericSheet';
@@ -14,8 +15,8 @@ import {
 } from '@/shared/models/bookinginterfaces';
 import { SheetType } from '@/shared/models/generalinterfaces';
 import { VehicleBookingAPI } from '@/shared/repositories/bookingService';
-import { Head, router } from '@inertiajs/react';
-import { PlusCircleIcon } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Download, PlusCircleIcon } from 'lucide-react';
 import BookingApprovalForm from './components/ApprovalForm';
 import { useGenerateColumns } from './components/column';
 import { BookingCreateForm } from './components/CreateForm';
@@ -32,6 +33,13 @@ const BookingManagement = ({
   vehicles,
   users,
 }: IBookingManagement) => {
+  const { auth } = usePage().props;
+  const { canDownloadBookings, canCreateBookings } = usePermissions(
+    auth.user?.permissions
+  );
+
+  const userId = String(auth.user.id);
+
   const { toast } = useToast();
 
   const { getSheetState, openSheet, closeSheet } =
@@ -112,8 +120,15 @@ const BookingManagement = ({
   };
 
   const columns = useGenerateColumns({
+    userId,
     handleAuthorize,
   });
+
+  const handleExport = () => {
+    if (!canDownloadBookings) return;
+
+    window.location.href = route('bookings.export');
+  };
 
   return (
     <AuthenticatedLayout>
@@ -123,9 +138,19 @@ const BookingManagement = ({
           title="Booking Management"
           desc="Manage vehicle's bookings approval and assignment"
           actionComponent={
-            <Button onClick={() => openSheet('booking-sheet', 'create')}>
-              Add Booking <PlusCircleIcon />{' '}
-            </Button>
+            <div className="flex items-center gap-3">
+              {canCreateBookings && (
+                <Button onClick={() => openSheet('booking-sheet', 'create')}>
+                  Add Booking <PlusCircleIcon />{' '}
+                </Button>
+              )}
+              {canDownloadBookings && (
+                <Button variant="outline" onClick={handleExport}>
+                  Export
+                  <Download className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
           }
         />
         <DataTable

@@ -27,6 +27,7 @@ Route::prefix('dashboard')
         Route::resource('user-management', UserController::class);
         Route::resource('vehicle-management', VehicleController::class);
         Route::resource('booking-management', VehicleBookingController::class);
+        Route::get('/export', [DashboardController::class, 'export'])->name('dashboard.export');
     });
 
 Route::middleware('auth')->group(function () {
@@ -40,14 +41,17 @@ Route::prefix('api')->middleware('auth')->group(function () {
     // User Routes
     Route::controller(UserController::class)->group(function () {
         Route::patch('users/{id}', 'update')->middleware('permission:edit_users');
+        Route::get('/export', 'export')->middleware('permission:download_users')->name('users.export');
     });
 
     // Vehicle Routes
-    Route::controller(VehicleController::class)->group(function () {
-        Route::patch('vehicles/{id}', 'update')->middleware('permission:edit_vehicles');
-        Route::post('vehicles', 'store')->middleware('permission:create_vehicles');
-        Route::delete('vehicles/{id}', 'destroy')->middleware('permission:delete_vehicles');
+    Route::prefix('vehicles')->controller(VehicleController::class)->group(function () {
+        Route::patch('{id}', 'update')->middleware('permission:edit_vehicles');
+        Route::post('', 'store')->middleware('permission:create_vehicles');
+        Route::delete('{id}', 'destroy')->middleware('permission:delete_vehicles');
+        Route::get('export', 'export')->middleware('permission:download_vehicles')->name('vehicles.export');
     });
+
 
     // Vehicle Maintenance Routes
     Route::controller(VehicleMaintenanceController::class)->prefix('vehicles/maintenances')->group(function () {
@@ -67,6 +71,7 @@ Route::prefix('api')->middleware('auth')->group(function () {
     Route::controller(VehicleBookingController::class)->prefix('vehicles/bookings')->group(function () {
         Route::post('/', 'store')->middleware('permission:create_bookings');
         Route::patch('{id}', 'update')->middleware('permission:edit_bookings');
+        Route::get('/export', 'export')->middleware('permission:download_bookings')->name('bookings.export');
     });
 });
 

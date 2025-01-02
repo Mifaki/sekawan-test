@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\UsersExport;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UserUpdateRequest;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Excel;
 
 class UserController extends Controller
 {
@@ -57,5 +59,13 @@ class UserController extends Controller
                 'status' => 500
             ], 500);
         }
+    }
+
+    public function export()
+    {
+        return app(abstract: Excel::class)->download(
+            new UsersExport,
+            'users-' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 }

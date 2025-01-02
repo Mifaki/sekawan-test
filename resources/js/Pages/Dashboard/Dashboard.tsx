@@ -1,11 +1,13 @@
+import { usePermissions } from '@/hooks/usePermission';
 import ManagementHeader from '@/shared/Components/ManagementHeader';
+import { Button } from '@/shared/Components/ui/button';
 import AuthenticatedLayout from '@/shared/Layouts/AuthenticatedLayout';
 import {
   IDashboardChartData,
   IDashboardStatistics,
 } from '@/shared/models/dashboardinterfaces';
-import { Head } from '@inertiajs/react';
-import { Car, Package, Shield, User } from 'lucide-react';
+import { Head, usePage } from '@inertiajs/react';
+import { Car, Download, Package, Shield, User } from 'lucide-react';
 import DashboardCard from './components/DashboardCard';
 import DashboardChart from './components/DashboardChart';
 
@@ -14,6 +16,15 @@ interface IDahsboard {
   statistics: IDashboardStatistics;
 }
 export default function Dashboard({ chartData, statistics }: IDahsboard) {
+  const { auth } = usePage().props;
+  const { canDownloadCombined } = usePermissions(auth.user?.permissions);
+
+  const handleExport = () => {
+    if (!canDownloadCombined) return;
+
+    window.location.href = route('dashboard.export');
+  };
+
   return (
     <AuthenticatedLayout>
       <Head title="Dashboard" />
@@ -22,6 +33,16 @@ export default function Dashboard({ chartData, statistics }: IDahsboard) {
         <ManagementHeader
           title="Dashboard"
           desc="Welcome to vehicle's admin dashboard."
+          actionComponent={
+            <>
+              {canDownloadCombined && (
+                <Button onClick={handleExport}>
+                  Export
+                  <Download className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </>
+          }
         />
 
         <div className="mt-10 grid h-full w-full grid-cols-4 grid-rows-4 gap-4">

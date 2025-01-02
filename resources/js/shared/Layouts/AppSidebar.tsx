@@ -1,3 +1,4 @@
+import { usePermissions } from '@/hooks/usePermission';
 import { sidebarData } from '@/lib/static/SidebarData';
 import {
   Sidebar,
@@ -5,11 +6,24 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/shared/Components/ui/sidebar';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import ApplicationLogo from '../Components/ApplicationLogo';
 import { NavGroup } from './NavGroup';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { auth } = usePage().props;
+  const { hasPermission } = usePermissions(auth.user?.permissions);
+
+  const filteredSidebarData = sidebarData
+    .map(group => ({
+      ...group,
+      items: group.items.filter(
+        item =>
+          !item.requiredPermission || hasPermission(item.requiredPermission)
+      ),
+    }))
+    .filter(group => group.items.length > 0);
+
   return (
     <Sidebar collapsible="icon" variant="floating" {...props}>
       <SidebarHeader>
@@ -19,7 +33,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarRail />
       <SidebarContent>
-        {sidebarData.map(props => (
+        {filteredSidebarData.map(props => (
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>

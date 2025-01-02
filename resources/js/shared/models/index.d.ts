@@ -1,11 +1,13 @@
 import { Config } from 'ziggy-js';
+import { Permission } from './permissioninterfaces';
 
 export interface User {
   id: number;
   name: string;
   email: string;
-  role: string;
+  roles: string[];
   email_verified_at?: string;
+  permissions: Permission[];
 }
 
 export type PageProps<

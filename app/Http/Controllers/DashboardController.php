@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CombinedExport;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleBooking;
@@ -10,6 +11,7 @@ use Illuminate\Support\Carbon;
 use App\Enums\VehicleBookingStatusEnum;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Excel;
 
 class DashboardController extends Controller
 {
@@ -72,5 +74,13 @@ class DashboardController extends Controller
             'statistics' => $statistics,
             'chartData'=> $chartData
         ]);
+    }
+
+    public function export()
+    {
+        return app(abstract: Excel::class)->download(
+            new CombinedExport,
+            'sekawan-test-' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 }

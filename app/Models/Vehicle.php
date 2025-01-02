@@ -21,6 +21,10 @@ class Vehicle extends Model
         'is_active'
     ];
 
+    protected $casts = [
+        'registration_expiry' => 'date',
+    ];
+
     public function maintenances()
     {
         return $this->hasMany(VehicleMaintenance::class);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\VehiclesExport;
 use App\Http\Requests\VehicleStoreRequest;
 use App\Http\Requests\VehicleUpdateRequest;
 use App\Models\Vehicle;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Excel;
 
 class VehicleController extends Controller
 {
@@ -142,5 +144,13 @@ class VehicleController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function export()
+    {
+        return app(abstract: Excel::class)->download(
+            new VehiclesExport,
+            'vehicles-' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 }

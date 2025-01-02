@@ -1,4 +1,5 @@
 import { INavGroup } from '@/shared/models/layoutinterfaces';
+import { PERMISSIONS } from '@/shared/models/permissioninterfaces';
 import {
   CarFront,
   Grid2X2Plus,
@@ -19,6 +20,7 @@ export const sidebarData: INavGroup[] = [
         title: 'User',
         url: '/dashboard/user-management',
         icon: User2,
+        requiredPermission: PERMISSIONS.VIEW_USERS,
       },
       {
         title: 'Vehicle',

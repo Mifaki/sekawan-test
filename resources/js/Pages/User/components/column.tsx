@@ -10,14 +10,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 
 interface UseGenerateColumnsProps {
-  editPermissions: boolean;
   handleEdit?: (user: IRootuser) => void;
 }
 
-export const useGenerateColumns = ({
-  editPermissions,
-  handleEdit,
-}: UseGenerateColumnsProps) => {
+export const useGenerateColumns = ({ handleEdit }: UseGenerateColumnsProps) => {
   const columns: ColumnDef<IRootuser>[] = [
     {
       accessorKey: 'id',
@@ -52,10 +48,7 @@ export const useGenerateColumns = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {handleEdit && (
-                <DropdownMenuItem
-                  onClick={() => handleEdit(user)}
-                  disabled={editPermissions}
-                >
+                <DropdownMenuItem onClick={() => handleEdit(user)}>
                   Edit
                 </DropdownMenuItem>
               )}
