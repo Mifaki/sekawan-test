@@ -98,15 +98,8 @@ php artisan serve
 
 ---
 
-## Diagrams
-
-### Physical Data Model
-
-[image]
-
-### Activity Diagram
-
-[image]
+## Physical Data Model
+![Relation](https://github.com/user-attachments/assets/4bf04b8d-75a1-4081-942c-ffa6c3bbbfeb)
 
 ---
 
