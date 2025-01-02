@@ -36,9 +36,12 @@ class VehicleSeeder extends Seeder
                 'is_active' => $faker->boolean,
             ]);
 
-            for ($j = 0; $j < rand(1, 5); $j++) {
+            for ($j = 0; $j < rand(10, 30); $j++) {
                 $status = $faker->randomElement(VehicleBookingStatusEnum::cases())->value;
-                $requestedDate = $faker->dateTimeBetween('-1 month', 'now');
+
+                $requestedDate = $faker->dateTimeBetween('-6 months', 'now');
+                $startDate = Carbon::instance($requestedDate)->addDays(rand(0, 5));
+                $endDate = $startDate->copy()->addDays(rand(1, 7));
 
                 $reviewers = $users->random(2);
 
@@ -46,14 +49,15 @@ class VehicleSeeder extends Seeder
                     'vehicle_id' => $vehicle->id,
                     'requested_by' => $users->random()->id,
                     'driver_id' => $users->random()->id,
-                    'start_datetime' => $faker->dateTimeBetween('-1 month', 'now'),
-                    'end_datetime' => $faker->dateTimeBetween('now', '+1 week'),
+                    'start_datetime' => $startDate,
+                    'end_datetime' => $endDate,
                     'purpose' => $faker->sentence,
                     'destination' => $faker->address,
                     'passenger_count' => $faker->numberBetween(1, 5),
                     'status' => $status,
                     'first_reviewer' => $reviewers[0]->id,
                     'second_reviewer' => $reviewers[1]->id,
+                    'created_at' => $requestedDate,
                     'first_approval_at' => null,
                     'second_approval_at' => null,
                     'rejected_by' => null,
@@ -61,20 +65,20 @@ class VehicleSeeder extends Seeder
                     'rejection_reason' => null,
                 ];
 
-                switch($status) {
+                switch ($status) {
                     case VehicleBookingStatusEnum::APPROVEDL1->value:
-                        $bookingData['first_approval_at'] = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        $bookingData['first_approval_at'] = Carbon::instance($requestedDate)->addHours(rand(1, 24));
                         break;
 
                     case VehicleBookingStatusEnum::COMPLETED->value:
-                        $firstApprovalDate = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        $firstApprovalDate = Carbon::instance($requestedDate)->addHours(rand(1, 24));
                         $bookingData['first_approval_at'] = $firstApprovalDate;
                         $bookingData['second_approval_at'] = $firstApprovalDate->copy()->addHours(rand(1, 24));
                         break;
 
                     case VehicleBookingStatusEnum::REJECTED->value:
                         $bookingData['rejected_by'] = $users->random()->id;
-                        $bookingData['rejected_at'] = Carbon::parse($requestedDate)->addHours(rand(1, 24));
+                        $bookingData['rejected_at'] = Carbon::instance($requestedDate)->addHours(rand(1, 24));
                         $bookingData['rejection_reason'] = $faker->sentence;
                         break;
                 }

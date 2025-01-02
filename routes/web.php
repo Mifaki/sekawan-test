@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleBookingController;
@@ -22,10 +23,7 @@ Route::get('/', function () {
 Route::prefix('dashboard')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
-
+        Route::resource('', DashboardController::class);
         Route::resource('user-management', UserController::class);
         Route::resource('vehicle-management', VehicleController::class);
         Route::resource('booking-management', VehicleBookingController::class);

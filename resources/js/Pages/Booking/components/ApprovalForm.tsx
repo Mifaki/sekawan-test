@@ -9,10 +9,7 @@ import {
 } from '@/shared/Components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/shared/Components/ui/radio-group';
 import { Textarea } from '@/shared/Components/ui/textarea';
-import {
-  IRootBooking,
-  IUpdateBookingPayloadRoot,
-} from '@/shared/models/bookinginterfaces';
+import { IUpdateBookingPayloadRoot } from '@/shared/models/bookinginterfaces';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
